@@ -18,9 +18,13 @@ module main
 import os
 import rand
 import rand.seed
+import term
+import time
 
 const max_index := 500	// max possible value: 5000
-const splash_screen := 'P@SSWERDLE'
+const splash_screen := '\x1b[0;31;1m|\x1b[0;32;1m[\x1b[0;1mP\x1b[0;32;1m]\x1b[0;32;1m[\x1b[0;1m@\x1b[0;32;1m]\x1b[0;31;1m[\x1b[0mS\x1b[0;31;1m]\x1b[0;32;1m[\x1b[0;1mS\x1b[0;32;1m]\x1b[0;31;1m[\x1b[0mW\x1b[0;31;1m][\x1b[0mE\x1b[0;31;1m]\x1b[0;32;1m[\x1b[0;1mR\x1b[0;32;1m]\x1b[0;32;1m[\x1b[0;1mD\x1b[0;32;1m]\x1b[0;31;1m[\x1b[0mL\x1b[0;31;1m]\x1b[0;32;1m[\x1b[0;1mE\x1b[0;32;1m]\x1b[0;31;1m|\x1b[0m'
+const splash_underline := term.red('================================')
+const splash_len := term.strip_ansi(splash_screen).len
 
 fn main() {
 	// seeds rng with current time and gets line number of word
@@ -36,5 +40,28 @@ fn main() {
 		index -= 1
 	}
 	str := buf.bytestr().trim(' \n\r\0')
+	width, height := term.get_terminal_size()
+	term.set_terminal_title('passwerdle')
+	term.clear()
+	mut x_coord := width / 2 - splash_len / 2
+	mut y_coord := height / 2
+	term.set_cursor_position(x: x_coord, y: y_coord)
+	println(splash_screen)
+	term.set_cursor_position(x: x_coord, y: y_coord - 1)
+	println(splash_underline)
+	term.set_cursor_position(x: x_coord, y: y_coord + 1)
+	println(splash_underline)
+	term.hide_cursor()
+	term.set_cursor_position(x: 0, y: height)
+	os.input_opt('Press any key to begin: ')
+	term.clear()
+	x_coord = width / 2 - str.len / 2
+	term.show_cursor()
+	term.set_cursor_position(x: x_coord, y: y_coord)
 	println(str)
+	term.hide_cursor()
+	term.set_cursor_position(x: 0, y: height)
+
+	time.sleep(5 * time.second)
+	term.clear()
 }
