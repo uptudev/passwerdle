@@ -81,11 +81,14 @@ fn main() {
 			congrats_str := "Congratulations! You've guessed the word!"
 			term.set_cursor_position(x: width / 2 - congrats_str.len / 2, y: height - 1)
 			println(congrats_str)
+			time.sleep(3 * time.second)
 			break
 		}
 		state.round += 1
 	}
-	time.sleep(3)
+	term.set_cursor_position(x: 0, y: height - 1)
+	println("You've run out of guesses! The word was: ${state.word}")
+	time.sleep(3 * time.second)
 }
 
 struct GameState {
