@@ -261,7 +261,7 @@ fn get_random_word() !string {
 	mut index := (rand.u32() % max_index) + 1
 
 	// opens file and reads line at index
-	file := os.open("rockyou.txt")!
+	mut file := os.open("rockyou.txt")!
 	mut buf := []u8{len: 24}
 
 	for file.read_bytes_with_newline(mut buf)! > 0 && index > 0 {
