@@ -268,5 +268,6 @@ fn get_random_word() !string {
 		unsafe{buf.reset()}	// idrk why this needs unsafe to reset all bytes to 0...
 		index -= 1
 	}
+	file.close()
 	return buf.bytestr().trim(' \n\r\0')
 }
