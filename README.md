@@ -12,7 +12,13 @@ A game based on guessing one of the top 500 most used passwords.
 
 ## Installation
 
-Passwerdle is written in V, a simple, fast, safe, compiled language. To install V, follow the instructions on the [official website](https://vlang.io).
+### Pre-built Binaries
+
+Pre-built binaries are available for Windows, macOS (Intel chips, **NOT** Apple Silicon; please build from source if you have an Apple CPU) and Linux in the [releases](https://github.com/uptudev/passwerdle/releases) section. Download the appropriate binary for your system and run it in a terminal.
+
+### Building from Source
+
+Passwerdle is written in V, a simple, fast, safe, compiled language. To build from source, install V by following the instructions on the [official website](https://vlang.io).
 
 Once you have V installed, you can clone the repository and build the game:
 
