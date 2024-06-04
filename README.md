@@ -1,4 +1,4 @@
-![# Passwerdle](https://i.imgur.com/dTuNdYY.png)
+![# Passwerdle](https://i.imgur.com/eLRg3v1.png)
 
 A game based on guessing one of the top 500 most used passwords.
 
