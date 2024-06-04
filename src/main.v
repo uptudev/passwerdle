@@ -82,13 +82,14 @@ fn main() {
 			term.set_cursor_position(x: width / 2 - congrats_str.len / 2, y: height - 1)
 			println(congrats_str)
 			time.sleep(3 * time.second)
-			break
+			exit(0)
 		}
 		state.round += 1
 	}
 	term.set_cursor_position(x: 0, y: height - 1)
 	println("You've run out of guesses! The word was: ${state.word}")
 	time.sleep(3 * time.second)
+	exit(0)
 }
 
 struct GameState {
@@ -140,7 +141,7 @@ fn (s GameState) debug_print() {
 
 fn (s GameState) calc_x_coord(i int) int {
 	width, _ := term.get_terminal_size()
-	return width / 2 - s.word_len * 3 / 2 + i * 3
+	return width / 2 - s.word_len * 3 / 2 + i * 3 - 1
 }
 
 fn (s GameState) calc_y_coord(j int) int {
@@ -150,24 +151,63 @@ fn (s GameState) calc_y_coord(j int) int {
 
 fn (s GameState) print_empty_board() {
 	term.clear()
-	y_coord := s.calc_y_coord(0)
+	left := s.calc_x_coord(0)
+	top := s.calc_y_coord(0) - 1
+	term.set_cursor_position(x: left, y: top)
+	print(term.bright_black("╭"))
+	term.set_cursor_position(x: left, y: top + 1)
+	print(term.bright_black("│"))
+	term.set_cursor_position(x: left, y: top + 2)
+	print(term.bright_black("├"))
+	term.set_cursor_position(x: left, y: top + 3)
+	print(term.bright_black("│"))
+	term.set_cursor_position(x: left, y: top + 4)
+	print(term.bright_black("╰"))
 	for i in 0..s.word_len {
-		x_coord := s.calc_x_coord(i)
-		term.set_cursor_position(x: x_coord, y: y_coord)
+		x_coord := s.calc_x_coord(i) + 1
+		term.set_cursor_position(x: x_coord, y: top)
+		print(term.bright_black('───'))
+		term.set_cursor_position(x: x_coord, y: top + 1)
 		print(grey_top)
-		term.set_cursor_position(x: x_coord, y: y_coord + 1)
+		term.set_cursor_position(x: x_coord, y: top + 2)
 		print(term.bright_black('┨ ┠'))
-		term.set_cursor_position(x: x_coord, y: y_coord + 2)
+		term.set_cursor_position(x: x_coord, y: top + 3)
 		print(grey_bot)
+		term.set_cursor_position(x: x_coord, y: top + 4)
+		print(term.bright_black('───'))
 	}
+	term.set_cursor_position(x: s.calc_x_coord(s.word_len) + 1, y: top)
+	println(term.bright_black("╮"))
+	term.set_cursor_position(x: s.calc_x_coord(s.word_len) + 1, y: top + 1)
+	println(term.bright_black("│"))
+	term.set_cursor_position(x: s.calc_x_coord(s.word_len) + 1, y: top + 2)
+	println(term.bright_black("┤"))
+	term.set_cursor_position(x: s.calc_x_coord(s.word_len) + 1, y: top + 3)
+	println(term.bright_black("│"))
+	term.set_cursor_position(x: s.calc_x_coord(s.word_len) + 1, y: top + 4)
+	println(term.bright_black("╯"))
 }
 
 fn (s GameState) print_board() {
 	term.clear()
+	left := s.calc_x_coord(0)
+	top := s.calc_y_coord(0) - 1
+	term.set_cursor_position(x: left, y: top)
+	print(term.bright_black("╭"))
+	for _ in 0..s.word_len {
+		print(term.bright_black('───'))
+	}
+	println(term.bright_black("╮"))
 	for j := 0; j <= s.round; j++ {
+		y_coord := s.calc_y_coord(j)
+		term.set_cursor_position(x: left, y: y_coord)
+		print(term.bright_black("│"))
+		term.set_cursor_position(x: left, y: y_coord + 1)
+		print(term.bright_black("├"))
+		term.set_cursor_position(x: left, y: y_coord + 2)
+		print(term.bright_black("│"))
 		for i in 0..s.word_len {
-			x_coord := s.calc_x_coord(i)
-			y_coord := s.calc_y_coord(j)
+			x_coord := s.calc_x_coord(i) + 1
 			if s.prior_guesses[j] & (1 << i) != 0 {
 				term.set_cursor_position(x: x_coord, y: y_coord)
 				print(green_top)
@@ -200,7 +240,19 @@ fn (s GameState) print_board() {
 				print(grey_bot)
 			}
 		}
+		term.set_cursor_position(x: s.calc_x_coord(s.word_len) + 1, y: y_coord)
+		println(term.bright_black("│"))
+		term.set_cursor_position(x: s.calc_x_coord(s.word_len) + 1, y: y_coord + 1)
+		println(term.bright_black("┤"))
+		term.set_cursor_position(x: s.calc_x_coord(s.word_len) + 1, y: y_coord + 2)
+		println(term.bright_black("│"))
 	}
+	term.set_cursor_position(x: left, y: s.calc_y_coord(s.round + 1))
+	print(term.bright_black("╰"))
+	for _ in 0..s.word_len {
+		print(term.bright_black('───'))
+	}
+	println(term.bright_black("╯"))
 }
 
 fn get_random_word() !string {
