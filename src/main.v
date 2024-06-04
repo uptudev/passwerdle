@@ -22,20 +22,12 @@ import term
 import time
 
 const max_index := 500	// max possible value: 5000
-const splash_screen := '\x1b[0;90m╓\x1b[0;90m┨\x1b[0;97mP\x1b[0;90m┠┨\x1b[0;97m@\x1b[0;90m┠\x1b[0;90m┨\x1b[0;97mS\x1b[0;90m┠\x1b[0;90m┨\x1b[0;97mS\x1b[0;90m┠\x1b[0;90m┨\x1b[0;97mW\x1b[0;90m┠┨\x1b[0;97mE\x1b[0;90m┠\x1b[0;90m┨\x1b[0;97mR\x1b[0;90m┠┨\x1b[0;97mD\x1b[0;90m┠\x1b[0;90m┨\x1b[0;97mL\x1b[0;90m┠\x1b[0;90m┨\x1b[0;97mE\x1b[0;90m┠\x1b[0;90m╖\x1b[0m'
 const grey_top := term.bright_black('┎─┒')
 const yellow_top := term.yellow('┎─┒')
 const green_top := term.green('┎─┒')
-const grey_mid := term.bright_black('┨┠')
-const yellow_mid := term.yellow('┖─┚')
-const green_mid := term.green('┖─┚')
 const grey_bot := term.bright_black('┖─┚')
 const yellow_bot := term.yellow('┖─┚')
 const green_bot := term.green('┖─┚')
-// box drawing chars are 3 bytes long, so a chunk of 2 + a regular ASCII char is 7 bytes
-// 6 refers to the 2 3-byte box characters that prepend and append the title.
-const splash_chars := (term.strip_ansi(splash_screen).len - 6) / 7
-const splash_len := splash_chars * 3 + 2 	// this is the terminal length, not byte length
 
 fn main() {
 	term.hide_cursor()
@@ -45,7 +37,7 @@ fn main() {
 
 	mut state := GameState{
 		round: 0,
-		word: 'PARSELRLDE',
+		word: 'P@RSELRLDE',
 		word_len: 10,
 		guess: 'P@SSWERDLE',
 		guesses_left: 1,
