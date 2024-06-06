@@ -22,7 +22,6 @@ import term
 import time
 import flag
 
-const max_index := 500	// max possible value: 5000
 const grey_top := term.bright_black('┎─┒')
 const yellow_top := term.yellow('┎─┒')
 const green_top := term.green('┎─┒')
@@ -38,6 +37,7 @@ fn main() {
 	fp.limit_free_args(0, 0)!
 	fp.skip_executable()
 	path := fp.string('load', `l`, '', 'Loads a plaintext newline-delmited wordbank from a given path.')
+	max_index := u32(fp.int('index', `i`, 500, 'Sets the maximum index for the wordbank (the last line it can read).'))
 	fp.finalize() or {
 		eprintln(err)
 		println(fp.usage())
@@ -67,7 +67,7 @@ fn main() {
 	term.show_cursor()
 	os.input_opt('Press <Enter> to begin:\n')
 
-	state.init(path)!
+	state.init(path, max_index)!
 	term.clear()
 	state.print_empty_board()
 	for state.round < state.guesses_left {
@@ -117,9 +117,9 @@ mut:
 	prior_guess_literals [16]string
 }
 
-fn (mut s GameState) init(path string) ! {
+fn (mut s GameState) init(path string, max_index u32) ! {
 	s.round = 0
-	s.word = get_random_word(path)!.to_upper()
+	s.word = get_random_word(path, max_index)!.to_upper()
 	s.word_len = u8(s.word.len)
 	s.guesses_left = (s.word_len - 5) / 2 + 6
 	s.guess_state = 0x0000
@@ -268,7 +268,7 @@ fn (s GameState) print_board() {
 	println(term.bright_black("╯"))
 }
 
-fn get_random_word(path string) !string {
+fn get_random_word(path string, max_index u32) !string {
 	// seeds rng with current time and gets line number of word
 	rand.seed(seed.time_seed_array(2))
 	mut index := (rand.u32() % max_index) + 1
