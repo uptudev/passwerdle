@@ -20,8 +20,8 @@ import rand
 import rand.seed
 import term
 import time
+import flag
 
-const max_index := 500	// max possible value: 5000
 const grey_top := term.bright_black('┎─┒')
 const yellow_top := term.yellow('┎─┒')
 const green_top := term.green('┎─┒')
@@ -30,6 +30,19 @@ const yellow_bot := term.yellow('┖─┚')
 const green_bot := term.green('┖─┚')
 
 fn main() {
+	mut fp := flag.new_flag_parser(os.args)
+	fp.application('passwerdle')
+	fp.description('A puzzle game based off of guessing common passwords.')
+	fp.version('0.2.0')
+	fp.limit_free_args(0, 0)!
+	fp.skip_executable()
+	path := fp.string('load', `l`, '', 'Loads a plaintext newline-delmited wordbank from a given path.')
+	max_index := u32(fp.int('index', `i`, 500, 'Sets the maximum index for the wordbank (the last line it can read).'))
+	fp.finalize() or {
+		eprintln(err)
+		println(fp.usage())
+		exit(1)
+	}
 	term.hide_cursor()
 	width, height := term.get_terminal_size()
 	term.set_terminal_title('passwerdle')
@@ -54,7 +67,7 @@ fn main() {
 	term.show_cursor()
 	os.input_opt('Press <Enter> to begin:\n')
 
-	state.init()!
+	state.init(path, max_index)!
 	term.clear()
 	state.print_empty_board()
 	for state.round < state.guesses_left {
@@ -104,9 +117,9 @@ mut:
 	prior_guess_literals [16]string
 }
 
-fn (mut s GameState) init() ! {
+fn (mut s GameState) init(path string, max_index u32) ! {
 	s.round = 0
-	s.word = get_random_word()!.to_upper()
+	s.word = get_random_word(path, max_index)!.to_upper()
 	s.word_len = u8(s.word.len)
 	s.guesses_left = (s.word_len - 5) / 2 + 6
 	s.guess_state = 0x0000
@@ -255,19 +268,27 @@ fn (s GameState) print_board() {
 	println(term.bright_black("╯"))
 }
 
-fn get_random_word() !string {
+fn get_random_word(path string, max_index u32) !string {
 	// seeds rng with current time and gets line number of word
 	rand.seed(seed.time_seed_array(2))
 	mut index := (rand.u32() % max_index) + 1
 
-	// opens file and reads line at index
-	mut file := os.open("rockyou.txt")!
-	mut buf := []u8{len: 24}
-
-	for file.read_bytes_with_newline(mut buf)! > 0 && index > 0 {
-		unsafe{buf.reset()}	// idrk why this needs unsafe to reset all bytes to 0...
-		index -= 1
+	if path == '' {
+		return get_word_from_index(index)
 	}
-	file.close()
-	return buf.bytestr().trim(' \n\r\0')
+
+	buf := os.read_lines(path) or {
+		println('Error reading file: ${err}.')
+		exit(1)
+	}
+
+	return buf[index].trim(' \n\r\0')
+}
+
+fn get_word_from_index(index u32) !string {
+	// opens file and reads line at index
+	file := $embed_file('rockyou.txt')
+	buf := file.to_string()
+	split := buf.split('\n')
+	return split[index].trim(' \n\r\0')
 }
