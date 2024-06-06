@@ -24,7 +24,7 @@ Once you have V installed, you can clone the repository and build the game:
 
 ```sh
 # Clone the repository and navigate into it
-git clone https://github.com/uptudev/passwerdle.git
+git clone https://github.com/uptu-dev/passwerdle.git
 cd ./passwerdle
 
 # Build the game
@@ -57,7 +57,19 @@ This project is licensed under the GNU GPL v3 License - see the [LICENSE](LICENS
 
 ## Additional Information
 
-`rockyou.txt` in this project is a list of the top 5000 most used passwords, which I have reduced to the top 500 for this game via the `max_index` constant found at the top of `main.v`. The full list is available on the internet and is often used for password cracking and security research. The full list is not included in this repository, but you can easily find it by searching for "rockyou.txt" on the internet. Note that this will not work inserted into this program as is, as game assumes a maximum word length of 16 characters, and the full list contains much longer words and may cause issues due to the size of the full list.
+`rockyou.txt` in this project is a list of the top 5000 most used passwords, which I have reduced to the top 500 for this game. The full list is available on the internet and is often used for password cracking and security research. The full list is not included in this repository, but you can easily find it by searching for "rockyou.txt" on the internet. Note that this will not work inserted into this program as is, as game assumes a maximum word length of 16 characters, and the full list contains much longer words and may cause issues due to the size of the full list.
+
+### Custom Word List
+
+If you want to use a custom word list, simply specify the path to the file as an argument when running the game. Note that for lists that aren't 500 words long, the `max_index` should be specified with the `-i` or `--max_index` flag. For example, to use a custom word list located at `/path/to/your/wordlist.txt`, run the game as follows
+
+```sh
+# Either
+./passwerdle -l /path/to/your/wordlist.txt -i 123
+
+# or
+./passwerdle --load /path/to/your/wordlist.txt --max_index 123
+```
 
 ### Tips
 
